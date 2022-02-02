@@ -736,8 +736,10 @@ drawbar(Monitor *m)
 	drw_setscheme(drw, scheme[SchemeNorm]);
 	if ((w = m->ww - sw - x) > bh) {
 		if (m->sel) {
+			drw_setscheme(drw, scheme[SchemeSel]);
 			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
 		} else {
+			drw_setscheme(drw, scheme[SchemeNorm]);
 			drw_rect(drw, x, 0, w, bh, 1, 1);
 		}
 	}
