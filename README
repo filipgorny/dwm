@@ -1,0 +1,5 @@
+# Suckless Dynamic Window Manager Fork
+
+My copy of DWM has following modyfications:
+- gaps
+- padding from a top of a screen

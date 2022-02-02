@@ -132,6 +132,7 @@ struct Monitor {
 	Monitor *next;
 	Window barwin;
 	const Layout *lt[2];
+	unsigned int side;
 };
 
 typedef struct {
@@ -202,6 +203,7 @@ static void setclientstate(Client *c, long state);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setgaps(const Arg *arg);
+static void switchside(const Arg *arg);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setup(void);
@@ -643,6 +645,7 @@ createmon(void)
 	m->topbar = topbar;
 	m->gappx = gappx;
 	m->toppaddingpx = toppaddingpx;
+	m->side = defaultside;
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
@@ -719,16 +722,16 @@ drawbar(Monitor *m)
 			urg |= c->tags;
 	}
 	x = 0;
-	for (i = 0; i < LENGTH(tags); i++) {
-		w = TEXTW(tags[i]);
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-		if (occ & 1 << i)
-			drw_rect(drw, x + boxs, boxs, boxw, boxw,
-				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
-				urg & 1 << i);
-		x += w;
-	}
+
+  /* print selected tag */
+	w = TEXTW(tags[m->seltags]);
+	drw_setscheme(drw, scheme[SchemeSel]);
+	drw_rect(drw, x, 0, x+w, bh, 1, 0);
+	drw_text(drw, x, 0, x+w, bh, lrpad / 2, tags[m->seltags], urg);
+	x += w;
+	drw_setscheme(drw, scheme[SchemeNorm]);
+
+	/* print scheme */
 	w = blw = TEXTW(m->ltsymbol);
 	drw_setscheme(drw, scheme[SchemeNorm]);
 	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
@@ -1512,6 +1515,12 @@ setgaps(const Arg *arg)
 	arrange(selmon);
 }
 
+void switchside(const Arg *arg)
+{
+	selmon->side = arg->i;
+	tile(selmon);
+}
+
 void
 setlayout(const Arg *arg)
 {
@@ -1706,14 +1715,26 @@ tile(Monitor *m)
 	ty = my = toppx;
 	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
 
-		if (i < m->nmaster) {
-			h = (m->wh - my) / (MIN(n, m->nmaster) - i) - m->gappx;
-			resize(c, m->wx + m->gappx, m->wy + my, mw - (2*c->bw) - m->gappx, h - (2*c->bw), 0);
-			my += HEIGHT(c) + m->gappx;
+		if (m->side == 0) {
+			if (i < m->nmaster) {
+				h = (m->wh - my) / (MIN(n, m->nmaster) - i) - m->gappx;
+				resize(c, m->wx + m->gappx, m->wy + my, mw - (2*c->bw) - m->gappx, h - (2*c->bw), 0);
+				my += HEIGHT(c) + m->gappx;
+			} else {
+				h = (m->wh - ty) / (n - i) - m->gappx;
+				resize(c, m->wx + mw + m->gappx, m->wy + ty, m->ww - mw - (2*c->bw) - 2*m->gappx, h - (2*c->bw), 0);
+				ty += HEIGHT(c) + m->gappx;
+			}
 		} else {
-			h = (m->wh - ty) / (n - i) - m->gappx;
-			resize(c, m->wx + mw + m->gappx, m->wy + ty, m->ww - mw - (2*c->bw) - 2*m->gappx, h - (2*c->bw), 0);
-			ty += HEIGHT(c) + m->gappx;
+				if (i < m->nmaster) {
+				h = (m->wh - my) / (MIN(n, m->nmaster) - i) - m->gappx;
+				resize(c, m->wx + m->ww - mw + m->gappx, m->wy + my, mw - (2*c->bw) - 2*m->gappx, h - (2*c->bw), 0);
+				my += HEIGHT(c) + m->gappx;
+			} else {
+				h = (m->wh - ty) / (n - i) - m->gappx;
+				resize(c, m->wx + m->gappx, m->wy + ty, m->ww - mw - (2*c->bw) - m->gappx, h - (2*c->bw), 0);
+				ty += HEIGHT(c) + m->gappx;
+			}	
 		}
 }
 
