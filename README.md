@@ -1,9 +1,24 @@
-# Dynamic Window Manager Fork
+# Dynamic Window Manager
 
-My copy of DWM has following modyfications:
+dwm is a dynamic window manager for X. It manages windows in tiled, monocle and floating layouts.
 
-- gaps
-- padding from top of a screen
-- tags area shortened to display just the selected one
+## About this repository
+
+This is a fork of official suckless.org dwm, started from version 6.2.
+
+## Changes from the original dwm
+
+- Added gaps
+- Added padding from top of a screen
+- Tags area shortened to display just the selected one
+
+## Contribution
+
+I would be happy if anyone wants to help developing.
+
+## LICENSE
+
+As the original project, this software is distributed under the MIT/X (X11) licence.
+Please feel free to use for your own, or fork it.
 
 [Original readme](README.suckless)
