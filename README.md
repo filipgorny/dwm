@@ -1,6 +1,6 @@
-# Dynamic Window Manager
+# Dynamic Window Manager (dwm) Plus
 
-dwm is a dynamic window manager for X. It manages windows in tiled, monocle and floating layouts.
+dwmp is a dynamic window manager for X. It manages windows in tiled, monocle and floating layouts.
 
 ## About this repository
 
