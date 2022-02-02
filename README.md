@@ -11,6 +11,7 @@ This is a fork of official suckless.org dwm, started from version 6.2.
 - Added gaps
 - Added padding from top of a screen
 - Tags area shortened to display just the selected one
+- Added clock
 
 ## Contribution
 
